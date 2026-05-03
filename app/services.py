@@ -1,6 +1,10 @@
 import uuid
 import json
 import boto3
+import logging
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 tickets = []
 
@@ -19,6 +23,8 @@ def send_ticket_event(ticket):
         MessageBody=json.dumps(message)
     )
 
+    logger.info(f"Sent ticket event to SQS for ticket id={ticket['id']}")
+
     return response
 
 def create_ticket_service(ticket):
@@ -33,7 +39,9 @@ def create_ticket_service(ticket):
 
     send_ticket_event(new_ticket)
 
+    logger.info(f"Created ticket id={new_ticket['id']}")
+
     return {
-        "message": "Ticket created",
+        "message": "Ticket created and event sent",
         "ticket": new_ticket
     }
